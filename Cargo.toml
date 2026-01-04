@@ -1,0 +1,66 @@
+[package]
+name = "embeddenator-agent-mcp"
+version = "0.1.0-alpha.1"
+edition = "2021"
+authors = ["Tyler Zervas <tz-dev@vectorweight.com>"]
+description = "Multi-agent orchestration MCP server for VS Code/GitHub Copilot"
+license = "MIT"
+repository = "https://github.com/tzervas/embeddenator-agent-mcp"
+keywords = ["mcp", "multi-agent", "orchestration", "copilot", "vscode"]
+categories = ["development-tools", "asynchronous"]
+
+[features]
+default = ["stdio", "web-providers"]
+
+# Transport
+stdio = []
+http = ["dep:axum", "dep:tower", "dep:tower-http"]
+
+# Provider groups
+web-providers = ["embeddenator-webpuppet/all-providers"]
+api-providers = []  # Future: OpenAI, Anthropic, Google APIs
+self-hosted = []    # Future: Ollama, vLLM, LocalAI
+
+# Integrations
+mcp-client = []     # Act as MCP client to call other MCP servers
+google-adk = []     # Future: Google Agent Development Kit
+
+[dependencies]
+# Webpuppet for browser automation
+embeddenator-webpuppet = { path = "../embeddenator-webpuppet" }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full", "sync", "time"] }
+futures = "0.3"
+async-trait = "0.1"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# CLI
+clap = { version = "4.4", features = ["derive"] }
+
+# HTTP server (optional)
+axum = { version = "0.7", optional = true }
+tower = { version = "0.4", optional = true }
+tower-http = { version = "0.5", features = ["cors", "trace"], optional = true }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Utilities
+uuid = { version = "1.6", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+[[bin]]
+name = "agent-mcp"
+path = "src/main.rs"
+
+[dev-dependencies]
+tokio-test = "0.4"
